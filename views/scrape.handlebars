@@ -1,0 +1,10 @@
+<h1>Scrape</h1>
+<div id="articles">
+    {{#each articles}}
+    <h2>
+        <a href="{{link}}">{{title}}</a>
+    </h2>
+    <div>{{description}}</div>
+    <button class="save" data-link="{{link}}" data-title="{{title}}" data-description="{{description}}">Save</button>
+    {{/each}}
+</div>
