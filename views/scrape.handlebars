@@ -1,10 +1,47 @@
-<h1>Scrape</h1>
-<div id="articles">
+<h1>Digg.com Scraped Articles</h1>
+<ul class="list-group">
     {{#each articles}}
-    <h2>
-        <a href="{{link}}">{{title}}</a>
-    </h2>
-    <div>{{description}}</div>
-    <button class="save" data-link="{{link}}" data-title="{{title}}" data-description="{{description}}">Save</button>
+    <li class="list-group-item">
+        <h5 class="mb-1"><a href="{{link}}">{{title}}</a></h5>
+        <p class="mb-1">{{description}}</p>
+        <button type="button" class="btn btn-primary save" data-link="{{link}}" data-title="{{title}}"
+            data-description="{{description}}">Save</button>
+    </li>
     {{/each}}
+</ul>
+<div id="saved-modal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Saved</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Your article is now saved.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="failed-modal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Failed</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>The article already exists. Try another article or view the saved list.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
 </div>

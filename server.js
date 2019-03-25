@@ -1,6 +1,7 @@
 var express = require("express");
 var mongoose = require("mongoose");
-var models = require("./models");
+var Article = require("./models/Article");
+var Note = require("./models/Note");
 var cheerio = require("cheerio");
 var axios = require("axios");
 
@@ -22,12 +23,39 @@ app.set("view engine", "handlebars");
 
 app.delete("/articles/:id", function(req, res) {
   var id = req.params.id;
-  models.Article.findByIdAndRemove(id).then(() => res.status(200).json({result:"success"}));
+  Article.findByIdAndRemove(id).then(() => res.status(200).json({result:"success"}));
 });
 
-app.post("/articles", function(req, res) {
-  const newArticle = new models.Article(req.body);
+app.post("/articles", async function(req, res) {
+  const newArticle = new Article(req.body);
+  const duplicateArticles = await Article.find({title:req.body.title}).select('title');
+  if (duplicateArticles && duplicateArticles.length !== 0) {
+    return res.status(400).json({result:"failed"});
+  }
   newArticle.save().then(() => res.status(200).json({result:"success"}));
+});
+
+app.post("/articles/:articleId/notes", function(req, res) {
+  const newNote = new Note(req.body);
+  newNote.save().then((noteDoc) => {
+    var articleId = req.params.articleId;
+    Article.findById(articleId).then((articleDocument) => {
+      articleDocument.notes.push(noteDoc._id);
+      articleDocument.save().then(() => res.status(200).json({result:"success"}));
+    });
+  });
+});
+
+app.delete("/articles/:articleId/notes/:id", function(req, res) {
+  var id = req.params.id;
+  var articleId = req.params.articleId;
+  Article.findById(articleId).then((articleDoc) => {
+    articleDoc.notes.pull(id);
+    articleDoc.save();
+  });
+  Note.findByIdAndRemove(id).then(() => {
+    res.status(200).json({result:"success"})
+  });
 });
 
 app.get("/scrape", function(req, res) {
@@ -59,7 +87,7 @@ app.get("/scrape", function(req, res) {
 });
 
 app.get("/saved", async function(req, res) {
-  const articles = await models.Article.find().select('title description link').populate('notes');
+  const articles = await Article.find().select('title description link').populate('notes');
   res.render("saved", {articles:articles});
 });
 
